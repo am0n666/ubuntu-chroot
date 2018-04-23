@@ -1,5 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/bash
-folder=ubuntu-fs
+cur=$(pwd)
+folder="$cur/ubuntu-fs"
 if [ -d "$folder" ]; then
     first=1
     echo "skipping downloading"
@@ -22,7 +23,6 @@ if [ "$first" != 1 ];then
             exit 1
         fi
     fi
-    cur=`pwd`
     mkdir -p $folder
     cd $folder
     echo "decompressing ubuntu image"
@@ -32,12 +32,11 @@ if [ "$first" != 1 ];then
     cd $cur
 fi
 mkdir -p binds
-bin=start.sh
+bin=/data/data/com.termux/files/usr/bin/startubuntu
 echo "writing launch script"
 cat > $bin <<- EOM
-#!/bin/bash
+#!/data/data/com.termux/files/usr/bin/bash
 cd \$(dirname \$0)
-#unset LD_PRELOAD in case termux-exec is installed
 unset LD_PRELOAD
 command="proot"
 command+=" --link2symlink"
@@ -68,8 +67,6 @@ else
     \$command -c "\$com"
 fi
 EOM
-echo "fixing shebang of $bin"
-termux-fix-shebang $bin
 echo "making $bin executable"
 chmod +x $bin
-echo "You can now launch Ubuntu with the ./start.sh script"
+echo "You can now launch Ubuntu with " startubuntu "
