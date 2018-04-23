@@ -69,4 +69,4 @@ fi
 EOM
 echo "making $bin executable"
 chmod +x $bin
-echo "You can now launch Ubuntu with " startubuntu "
+echo "You can now launch Ubuntu with " startubuntu ""
