@@ -65,7 +65,7 @@ unset LD_PRELOAD
 command="proot"
 command+=" --link2symlink"
 command+=" -0"
-command+=" -r $folder"
+command+=" -r $cur/ubuntu-fs"
 if [ -n "\$(ls -A binds)" ]; then
     for f in $cur/binds/* ;do
       . \$f
