@@ -5,7 +5,7 @@ if [ -d "$folder" ]; then
 	echo "skipping downloading"
 fi
 while [[ $env != 0 ]]; do
-u_version="Please select the ubuntu version:
+u_version="\nPlease select the Ubuntu version:
 
     1. Ubuntu 18.04 Bionic
     2. Ubuntu 17.10 Artful
@@ -16,13 +16,17 @@ echo -e "$u_version"
 read env;
 case $env in
   1) echo -e "\nInstalling Ubuntu 18.04 Bionic"
-      ubuntu_version="bionic";;
+      ubuntu_version="bionic"
+      break;;
   2) echo -e "\nInstalling Ubuntu 17.10 Artful"
-      ubuntu_version="arful";;
+      ubuntu_version="artful"
+      break;;
   3) echo -e "\nInstalling Ubuntu 16.04 Xenial"
-      ubuntu_version="xenial";;
-  *) echo -e "\Please enter the correct option";;
+      ubuntu_version="xenial"
+      break;;
+  *) echo -e "\nPlease enter the correct option";;
 esac
+done
 tarball="ubuntu.tar.gz"
 if [ "$first" != 1 ];then
 	if [ ! -f $tarball ]; then
@@ -39,7 +43,7 @@ if [ "$first" != 1 ];then
 		*)
 			echo "unknown architecture"; exit 1 ;;
 		esac
-		wget "https://partner-images.canonical.com/core/${ubuntuv_ersion}/current/ubuntu-${ubuntu_version}-core-cloudimg-${archurl}-root.tar.gz" -O $tarball
+		wget "https://partner-images.canonical.com/core/${ubuntu_version}/current/ubuntu-${ubuntu_version}-core-cloudimg-${archurl}-root.tar.gz" -O $tarball
 	fi
 	cur=`pwd`
 	mkdir -p "$folder"
