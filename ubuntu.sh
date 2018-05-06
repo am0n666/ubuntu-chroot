@@ -5,32 +5,30 @@ if [ -d "$folder" ]; then
 	echo "skipping downloading"
 fi
 while [[ $env != 0 ]]; do
-u_version="\nPlease select the Ubuntu version:
+echo -e "\nPlease select the Ubuntu version:
 
     1. Ubuntu 18.04 Bionic
     2. Ubuntu 17.10 Artful
     3. Ubuntu 16.04 Xenial
     
 "
-echo -e "$u_version"
 read env;
 case $env in
-  1) echo -e "\nInstalling Ubuntu 18.04 Bionic"
+  1) echo -e "\nDowloading Ubuntu 18.04 Bionic\n"
       ubuntu_version="bionic"
       break;;
-  2) echo -e "\nInstalling Ubuntu 17.10 Artful"
+  2) echo -e "\nDowloading Ubuntu 17.10 Artful\n"
       ubuntu_version="artful"
       break;;
-  3) echo -e "\nInstalling Ubuntu 16.04 Xenial"
+  3) echo -e "\nDowloading Ubuntu 16.04 Xenial\n"
       ubuntu_version="xenial"
       break;;
-  *) echo -e "\nPlease enter the correct option";;
+  *) echo -e "\nPlease enter the correct option\n";;
 esac
 done
 tarball="ubuntu.tar.gz"
 if [ "$first" != 1 ];then
 	if [ ! -f $tarball ]; then
-		echo "downloading ubuntu-image"
 		case `dpkg --print-architecture` in
 		aarch64)
 			archurl="arm64" ;;
@@ -43,20 +41,32 @@ if [ "$first" != 1 ];then
 		*)
 			echo "unknown architecture"; exit 1 ;;
 		esac
-		wget "https://partner-images.canonical.com/core/${ubuntu_version}/current/ubuntu-${ubuntu_version}-core-cloudimg-${archurl}-root.tar.gz" -O $tarball
+		shasum="sha256_${ubuntu_version}_${archurl}"
+		wget "https://partner-images.canonical.com/core/${ubuntu_version}/current/ubuntu-${ubuntu_version}-core-cloudimg-${archurl}-root.tar.gz"
+		echo -e "\ndownloading sha256sum\n"
+		wget "https://partner-images.canonical.com/core/${ubuntu_version}/current/SHA256SUMS" -O $shasum
 	fi
+	echo -e "\nchecking integrity\n"
+	check="$(sha256sum -c $shasum  | grep "ubuntu-${ubuntu_version}-core-cloudimg-${archurl}-root.tar.gz:" | cut -d" " -f2)"
+	if [ "$check" != "OK" ]; then
+	echo -e "\nintegrity_check:${check}! downloaded image file was corrupted or half downloaded!rerun the script again."
+	exit
+	else
+	echo -e "\nintegrity_check:${check}\n"
+	mv *.tar.gz $tarball
 	cur=`pwd`
 	mkdir -p "$folder"
 	cd "$folder"
-	echo "decompressing ubuntu image"
+	echo -e "decompressing ubuntu image\n"
 	proot --link2symlink tar -xf ${cur}/${tarball} --exclude='dev'||:
 	echo "fixing nameserver, otherwise it can't connect to the internet"
-	echo "nameserver 1.1.1.1" > etc/resolv.conf
+	echo "nameserver 8.8.8.8" > etc/resolv.conf
 	cd "$cur"
+	fi
 fi
 mkdir -p binds
 bin=$PREFIX/bin/ubuntu
-echo "writing launch script"
+echo -e "writing launch script\n"
 cat > $bin <<- EOM
 #!/bin/bash
 cd \$(dirname \$0)
@@ -93,8 +103,8 @@ else
 fi
 EOM
 chmod 777 $bin
-echo "fixing shebang of $bin"
+echo -e "fixing shebang of $bin\n"
 termux-fix-shebang $bin
-echo "making $bin executable"
+echo -e "making $bin executable\n"
 chmod +x $bin
 echo "You can now launch Ubuntu with the command ubuntu"
