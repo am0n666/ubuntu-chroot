@@ -81,7 +81,7 @@ cd \$(dirname \$0)
 ## unset LD_PRELOAD in case termux-exec is installed
 unset LD_PRELOAD
 command="proot"
-command+=" --link2symlink
+command+=" --link2symlink"
 command+=" -0"
 command+=" -r $cur/ubuntu-fs"
 if [ -n "\$(ls -A $cur/binds)" ]; then
