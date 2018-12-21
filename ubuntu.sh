@@ -55,7 +55,7 @@ if [ "$first" != 1 ];then
 	check="$(sha256sum -c sha256 | cut -d" " -f2)"
 	if [ "$check" != "OK" ]; then
 	echo -e "\nintegrity check... ${me}${check}!${no} downloaded image file was corrupted or half downloaded!rerun the script again."
-	yes | rm -R !(ubuntu.sh)
+	find . ! -name "ubuntu.sh" -exec rm -r {} \;
 	exit
 	else
 	echo -e "\nintegrity check... ${hi}${check}$no\n"
